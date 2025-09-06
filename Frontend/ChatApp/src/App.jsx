@@ -13,7 +13,7 @@ function App() {
 
     const syncUser = async () => {
       try {
-        await axios.post("/api/users/sync", {
+        await axios.post(`${import.meta.env.VITE_BASE_URL}user/register`, {
           clerkId: user.id,
           displayName: user.fullName,
           avatarUrl: user.profileImageUrl,

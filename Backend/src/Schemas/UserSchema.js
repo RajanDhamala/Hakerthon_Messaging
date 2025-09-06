@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
+  _id:{
+    type: String, required: true
+  },
   name: { 
     type: String, required: true 
   },
@@ -14,7 +17,7 @@ const UserSchema = new mongoose.Schema({
     type: Date, default: Date.now 
   },
   friends: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "User" }
+    { type: String, ref: "User" }
   ],
   status: { 
     type: String, enum: ["online", "offline", "away"], default: "away" 
@@ -34,3 +37,6 @@ const UserSchema = new mongoose.Schema({
 UserSchema.index({name: 1 });
 
 export const User = mongoose.model("User", UserSchema);
+
+
+export default User;

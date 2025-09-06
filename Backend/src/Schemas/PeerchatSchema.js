@@ -6,7 +6,7 @@ const MessageSchema = new mongoose.Schema({
      type: String, required: true 
     },           
   sender: {
-     type: mongoose.Schema.Types.ObjectId, ref: "User", required: true
+     type: String, ref: "User", required: true
   },
   content: {
     ciphertext: { type: String, required: true },
@@ -23,7 +23,7 @@ const MessageSchema = new mongoose.Schema({
 
 const PeerchatSchema = new mongoose.Schema({
   chatters: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true } 
+    { type: String, ref: "User", required: true } 
   ],
   theme: {
      type: String, default: "light"

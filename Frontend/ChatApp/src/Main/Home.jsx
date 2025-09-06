@@ -6,14 +6,41 @@ import {
   UserButton,
 } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useUser, SignedIn, SignedOut, UserButton, SignInButton, SignUpButton } from "@clerk/clerk-react";
+import axios from "axios";
+
 
 export default function Home() {
   const navigate = useNavigate();
+  const { user, isSignedIn } = useUser();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  // Send user data to backend after login/register
   useEffect(() => {
-    // You can add logic to auto-redirect if user is signed in
-  }, []);
+    if (!isSignedIn || !user) return;
+    setLoading(true);
+    setError("");
+    const syncUser = async () => {
+      try {
+        await axios.post(`${import.meta.env.VITE_BASE_URL}user/register`, {
+          clerkId: user.id,
+          displayName: user.fullName,
+          avatarUrl: user.profileImageUrl,
+          birthDate: user.birthDate,
+          gender: user.gender,
+          email: user.emailAddresses[0]?.emailAddress,
+        });
+        setLoading(false);
+        navigate("/chat");
+      } catch (err) {
+        setLoading(false);
+        setError(err?.response?.data?.message || "Failed to sync user. Please try again.");
+      }
+    };
+    syncUser();
+  }, [isSignedIn, user, navigate]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white">
@@ -38,7 +65,12 @@ export default function Home() {
 
         <SignedIn>
           <div className="flex items-center gap-3">
-            {/* UserButton provides profile + logout dropdown */}
+            <button
+              className="px-4 py-2 rounded-lg bg-blue-100 text-blue-700 font-medium shadow hover:bg-blue-200 transition"
+              onClick={() => navigate("/profile")}
+            >
+              Profile
+            </button>
             <UserButton afterSignOutUrl="/" />
           </div>
         </SignedIn>
@@ -53,10 +85,12 @@ export default function Home() {
           Fast. Private. Yours. Chat instantly with your circle, safely and securely.
         </p>
 
-        {/* Auto-redirect if already signed in */}
-        <SignedIn>
-          {navigate("/chat")}
-        </SignedIn>
+        {loading && (
+          <div className="text-blue-600 font-medium mb-4">Syncing your account...</div>
+        )}
+        {error && (
+          <div className="text-red-500 font-medium mb-4">{error}</div>
+        )}
       </main>
     </div>
   );
