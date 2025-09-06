@@ -3,6 +3,8 @@ import http from "http";
 import cors from "cors";
 import dotenv from "dotenv";
 import { ConnectSocket } from "./src/Utils/SocketConnection.js";
+import ChatRoute from "./src/Routes/ChatRoute.js";
+import UserRoute from "./src/Routes/UserRoute.js";
 
 
 dotenv.config();
@@ -22,6 +24,8 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/chat", ChatRoute);
+app.use("/user", UserRoute);
 
 // Test route
 app.get("/", (req, res) => {
