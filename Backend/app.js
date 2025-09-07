@@ -5,14 +5,17 @@ import dotenv from "dotenv";
 import { ConnectSocket } from "./src/Utils/SocketConnection.js";
 import ChatRoute from "./src/Routes/ChatRoute.js";
 import UserRoute from "./src/Routes/UserRoute.js";
+import {SocketController} from "./src/Controller/SocketController.js";
+
+
 
 
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app); 
-
 const io = ConnectSocket(server);
+SocketController(io);
 
 app.use(
   cors({

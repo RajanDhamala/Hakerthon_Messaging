@@ -24,14 +24,33 @@ const UserSchema = new mongoose.Schema({
   },
   publicKey: { 
     type: String 
+    ,default:""
   },
   privateKey: { 
-    type: String 
+    type: String
+    ,default:""
   },
   chats: [
     { type: mongoose.Schema.Types.ObjectId, ref: "Peerchat"
     }
   ], // P2P chats
+  messageRequests:[
+    {
+      from:{
+        type: String, ref: "User"
+      },
+      message:{ type: String ,
+        default:"Hi, let's connect!"
+      },
+      sentAt:{ type: Date, default: Date.now }
+
+    }
+  ],groupsChats:[
+    { 
+      type: mongoose.Schema.Types.ObjectId,
+       ref: "Groupchat"
+    }
+  ] 
 });
 
 UserSchema.index({name: 1 });

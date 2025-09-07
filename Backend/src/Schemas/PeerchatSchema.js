@@ -34,4 +34,7 @@ const PeerchatSchema = new mongoose.Schema({
   },
 });
 
-export const Peerchat = mongoose.model("Peerchat", PeerchatSchema);
+PeerchatSchema.index({ chatters: 1 });
+ const Peerchat = mongoose.model("Peerchat", PeerchatSchema);
+
+export default Peerchat;
