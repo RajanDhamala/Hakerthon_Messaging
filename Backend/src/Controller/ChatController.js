@@ -20,8 +20,8 @@ const fetchPeerMessages=asyncHandler(async(req,res)=>{
 })
 
 const sendMessage=asyncHandler(async(req,res)=>{
-    const {receiverId,message,chat_id,messageId}=req.body;
-    const {senderId}=req.user;
+    const {receiverId,message,senderId}=req.params;
+    // const {senderId}=req.user;
 
     if(!senderId || !receiverId || !message){
         throw new ApiError(400,"userId, receiverId and message are required");
@@ -91,21 +91,47 @@ const EditMessage=asyncHandler(async(req,res)=>{
 })
 
 
+// Controller to fetch chats but with a single static message for testing
 const fetchCurrentChats = asyncHandler(async (req, res) => {
   const { userId } = req.params;
   if (!userId) throw new ApiError(400, "userId is required");
 
-  const chats = await Peerchat.find({
+  let chats = await Peerchat.find({
     chatters: { $in: [userId] },
   })
     .populate("chatters", "_id name avatarUrl publicKey")
-    .populate("messages.sender", "_id name avatarUrl publicKey")
-    .lean(); // optional, returns plain JS objects
+    .lean();
+
+  // Replace messages array with one static message for testing
+  chats = chats.map(chat => {
+    const otherChatters = chat.chatters.filter(
+      (chatter) => chatter._id.toString() !== userId
+    );
+
+    return {
+      ...chat,
+      chatters: otherChatters,
+      messages: [
+        {
+          messageId: "msg_static_1",
+          senderId: otherChatters[0]?._id || userId,
+          senderName: otherChatters[0]?.name || "Test User",
+          text: "Hello, this is a static test message!",
+          chatId: chat._id,
+          timestamp: new Date().toISOString(),
+          type: "text",
+          isSeen: false,
+        }
+      ]
+    };
+  });
 
   return res
     .status(200)
     .json(new ApiResponse(true, "Chats fetched successfully", chats));
 });
+
+
 
 
 export{

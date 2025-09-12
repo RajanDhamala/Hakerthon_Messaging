@@ -81,18 +81,27 @@ const sendMessageRequest = asyncHandler(async (req, res) => {
   );
 });
 
+// Controller: Search users excluding the current sender
 const searchUsers = asyncHandler(async (req, res) => {
-  const { query } = req.query;
-  if (!query) {
-    throw new ApiError(400,'search query is required');
+  const senderId = req.user;
+  if (!senderId) {
+    throw new ApiError(400, "user_id is required");
   }
 
+  const { query } = req.query;
+  if (!query) {
+    throw new ApiError(400, "search query is required");
+  }
+
+  // 🔹 Exclude the sender themselves from search results
   const users = await User.find({
+    _id: { $ne: senderId }, // exclude logged-in user
     name: { $regex: query, $options: "i" }
   }).select("_id name avatarUrl status");
 
   res.status(200).json(new ApiResponse(true, "Search results", users));
 });
+
 
 
 const AcceptMessageRequest = asyncHandler(async (req, res) => {

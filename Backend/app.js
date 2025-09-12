@@ -6,6 +6,7 @@ import { ConnectSocket } from "./src/Utils/SocketConnection.js";
 import ChatRoute from "./src/Routes/ChatRoute.js";
 import UserRoute from "./src/Routes/UserRoute.js";
 import {SocketController} from "./src/Controller/SocketController.js";
+import GroupRoute from "./src/Routes/GroupRoute.js";
 
 
 
@@ -29,6 +30,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/chat", ChatRoute);
 app.use("/user", UserRoute);
+app.use("/group", GroupRoute);
 
 // Test route
 app.get("/", (req, res) => {
